@@ -60,10 +60,6 @@ POSTGRES_DB=desafio_teddy
 POSTGRES_PASSWORD=postgres
 ```
 
-> **Produção (Railway):** use as *Public Connection URLs* dos add-ons:  
-> - `DATABASE_URL=postgresql://<user>:<password>@monorail.proxy.rlwy.net:5432/<db>`  
-> - `REDIS_URL=rediss://default:<password>@monorail.proxy.rlwy.net:6379`
-
 ---
 
 ## ▶️ Como rodar
