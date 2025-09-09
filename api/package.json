@@ -16,7 +16,7 @@
     "build": "nest build",
     "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
-    "start:prod": "node dist/main.js",
+    "start:prod": "npm run migrate:deploy && node dist/main.js",
     "migrate:local": "dotenv -e .env -- sh -lc 'DATABASE_URL=${DATABASE_URL/db:/localhost:} npx prisma migrate dev'",
     "generate:local": "dotenv -e .env -- sh -lc 'DATABASE_URL=${DATABASE_URL/db:/localhost:} npx prisma generate'",
     "test": "jest --passWithNoTests",
