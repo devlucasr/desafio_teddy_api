@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+
+# Builds e relatórios
+dist/
+coverage/
+
+# Variáveis de ambiente
+.env
+
+# Logs
+*.log
+
+# Configurações locais
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.swo
