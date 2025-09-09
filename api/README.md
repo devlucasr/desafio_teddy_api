@@ -6,7 +6,7 @@ Permite criar links curtos, autenticar usuários, gerenciar os links cadastrados
 ---
 
 ## 🛠️ Stack
-- NestJS (Node.js 20 LTS)
+- NestJS (Node.js 22 LTS)
 - Prisma + PostgreSQL
 - Passport JWT
 - Redis (cache de URLs anônimas)
@@ -31,9 +31,12 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes chaves:
 | `DATABASE_URL`           | URL de conexão com o banco PostgreSQL                                     | `postgresql://postgres:postgres@db:5432/desafio_teddy` |
 | `JWT_SECRET`             | Segredo usado para assinar os tokens JWT                                 | `super-secret-key`                           |
 | `APP_ORIGIN`             | Origem/base URL usada para compor os links encurtados                    | `http://localhost:3000`                      |
-| `REDIS_URL`              | Conexão do Redis (armazenamento de URLs anônimas com TTL)                | `redis://cache:6379`                         |
+| `REDIS_URL`              | Conexão do Redis (armazenamento de URLs anônimas com TTL)                | `redis://redis:6379`                         |
 | `ANON_URL_TTL_SECONDS`   | Tempo de vida (em segundos) de uma URL anônima no Redis                  | `86400` (24h)                                |
 | `PORT`                   | Porta em que a API vai rodar                                             | `3000`                                       |
+| `POSTGRES_USER`          | Usuário do banco PostgreSQL (usado no container)                         | `postgres`                                   |
+| `POSTGRES_DB`            | Nome do banco de dados                                                   | `desafio_teddy`                              |
+| `POSTGRES_PASSWORD`      | Senha do usuário do banco PostgreSQL                                     | `postgres`                                   |
 
 ### Exemplo `.env`
 
@@ -41,9 +44,12 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes chaves:
 DATABASE_URL=postgresql://postgres:postgres@db:5432/desafio_teddy
 JWT_SECRET=super-secret-key
 APP_ORIGIN=http://localhost:3000
-REDIS_URL=redis://cache:6379
+REDIS_URL=redis://redis:6379
 ANON_URL_TTL_SECONDS=86400
 PORT=3000
+POSTGRES_USER=postgres
+POSTGRES_DB=desafio_teddy
+POSTGRES_PASSWORD=postgres
 ```
 
 ---
@@ -127,6 +133,32 @@ npm run test
 Veja o histórico detalhado em [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
+
+## 🚀 Possíveis Melhorias para Escalabilidade Horizontal
+
+Para suportar um aumento de usuários e acessos, algumas melhorias simples podem ser feitas:
+
+- **Banco de dados**  
+  - Criar réplicas de leitura para aliviar a carga.  
+  - Melhorar índices para consultas mais rápidas.  
+
+- **Cache**  
+  - Usar múltiplas instâncias de Redis para dividir a carga.  
+
+- **Aplicação**  
+  - Rodar a API em mais de uma instância e colocar atrás de um balanceador de carga.  
+  - Separar algumas responsabilidades em microsserviços se o sistema crescer.  
+
+- **Desafios principais**  
+  - Garantir que o contador de cliques seja atualizado de forma correta com várias instâncias.  
+  - Manter o cache sempre sincronizado com o banco.
+  
+---
+
+## 📬 Postman Collection
+
+Para facilitar os testes da API, você pode importar a Collection do Postman pronta:
+- Link para a Collection → [https://l1nk.dev/9gAiN](https://l1nk.dev/9gAiN)   
 
 ## 🧑‍💻 Desenvolvedor
 Lucas Ribeiro Fernandes
