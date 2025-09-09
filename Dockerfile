@@ -10,7 +10,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
 RUN npm run build
-RUN test -f dist/main.js || (echo "ERRO: dist/main.js não encontrado. Verifique saída do Nest build e caminhos." && ls -la dist || true && exit 1)
+RUN test -f dist/main.js -o -f dist/src/main.js || (echo "ERRO: artefato de build não encontrado"; ls -la dist; ls -la dist/src || true; exit 1)
 
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -21,4 +21,4 @@ COPY --from=build /app/dist ./dist
 COPY prisma ./prisma
 COPY package.json ./
 EXPOSE 3000
-CMD ["sh", "-lc", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-lc", "npx prisma migrate deploy && node $( [ -f dist/main.js ] && echo dist/main.js || echo dist/src/main.js )"]
