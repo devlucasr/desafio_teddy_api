@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: desafio_teddy_db
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+    container_name: desafio_teddy_api
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:dev"
+
+  redis:
+    image: redis:7-alpine
+    container_name: desafio_teddy_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+
+volumes:
+  db_data:
