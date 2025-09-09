@@ -5,6 +5,14 @@ Permite criar links curtos, autenticar usuários, gerenciar os links cadastrados
 
 ---
 
+## 🌐 Ambiente em Produção (Deploy)
+
+- **Base URL:** https://desafioteddyapi-production.up.railway.app
+- **Swagger UI:** https://desafioteddyapi-production.up.railway.app/docs
+- **OpenAPI JSON:** https://desafioteddyapi-production.up.railway.app/openapi.json
+
+---
+
 ## 🛠️ Stack
 - NestJS (Node.js 22 LTS)
 - Prisma + PostgreSQL
@@ -51,6 +59,10 @@ POSTGRES_USER=postgres
 POSTGRES_DB=desafio_teddy
 POSTGRES_PASSWORD=postgres
 ```
+
+> **Produção (Railway):** use as *Public Connection URLs* dos add-ons:  
+> - `DATABASE_URL=postgresql://<user>:<password>@monorail.proxy.rlwy.net:5432/<db>`  
+> - `REDIS_URL=rediss://default:<password>@monorail.proxy.rlwy.net:6379`
 
 ---
 
@@ -124,8 +136,12 @@ npm run test
 
 ## 📖 Documentação da API
 
-- Swagger UI → [http://localhost:3000/docs](http://localhost:3000/docs)  
-- OpenAPI JSON → [http://localhost:3000/openapi.json](http://localhost:3000/openapi.json)
+- Ambiente de **produção**:  
+  - Swagger UI → https://desafioteddyapi-production.up.railway.app/docs  
+  - OpenAPI JSON → https://desafioteddyapi-production.up.railway.app/openapi.json
+- Ambiente **local**:  
+  - Swagger UI → http://localhost:3000/docs  
+  - OpenAPI JSON → http://localhost:3000/openapi.json
 
 ---
 
@@ -136,29 +152,35 @@ Veja o histórico detalhado em [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🚀 Possíveis Melhorias para Escalabilidade Horizontal
 
-Para suportar um aumento de usuários e acessos, algumas melhorias simples podem ser feitas:
+Para suportar um aumento de usuários e acessos, algumas melhorias podem ser feitas:
 
-- **Banco de dados**  
-  - Criar réplicas de leitura para aliviar a carga.  
-  - Melhorar índices para consultas mais rápidas.  
+- **Banco de dados**
+  - Criar réplicas de leitura (read replicas) e usar *pooling* de conexões.
+  - Indexar campos mais consultados e revisar planos de execução.
+  - Aplicar *partitioning* em tabelas de métricas/cliques se necessário.
 
-- **Cache**  
-  - Usar múltiplas instâncias de Redis para dividir a carga.  
+- **Cache**
+  - Redis com *Cluster Mode* ou *sharding* para distribuir carga.
+  - Políticas de invalidação/expiração bem definidas para URLs.
+  - Usar *rate limiting* e *circuit breaker* na borda.
 
-- **Aplicação**  
-  - Rodar a API em mais de uma instância e colocar atrás de um balanceador de carga.  
-  - Separar algumas responsabilidades em microsserviços se o sistema crescer.  
+- **Aplicação**
+  - Escalar horizontalmente múltiplas instâncias atrás de um balanceador.
+  - *Stateless*: sessões e rate limit em Redis (ou outro store) para não depender de estado local.
+  - Observabilidade: métricas (Prometheus/Grafana), logs centralizados e *tracing* distribuído.
 
-- **Desafios principais**  
-  - Garantir que o contador de cliques seja atualizado de forma correta com várias instâncias.  
-  - Manter o cache sempre sincronizado com o banco.
-  
+- **Desafios principais**
+  - Contagem de cliques **consistente** em múltiplas instâncias (usar incremento atômico no Redis/DB e workers de agregação).
+  - Sincronização entre cache e banco (estratégias *write-through* / *cache-aside*).
+
 ---
 
 ## 📬 Postman Collection
 
 Para facilitar os testes da API, você pode importar a Collection do Postman pronta:
-- Link para a Collection → [https://l1nk.dev/9gAiN](https://l1nk.dev/9gAiN)   
+- Link para a Collection → https://l1nk.dev/9gAiN
+
+---
 
 ## 🧑‍💻 Desenvolvedor
 Lucas Ribeiro Fernandes
